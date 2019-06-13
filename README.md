@@ -9,6 +9,8 @@ https://www.stoky.cz/cestou-vysociny/a-1388
 You can try Beta version of the app there:
 https://emksq.codesandbox.io/
 
+![](./images/preview.png?raw=true "Optional Title")
+
 ### Known bugs:
 - Route color change broken for whole route when Points off the route feature was added.
 - Save image (Uložit obrázek) button do not render everything from the map.
