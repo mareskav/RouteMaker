@@ -6,7 +6,6 @@ import {
   addLinePoints
 } from "./index.js"
 import { SMap, JAK } from "loader.js"
-import html2canvas from "html2canvas.js"
 
 let coords = []
 

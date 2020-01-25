@@ -54,8 +54,7 @@ const startDrag = event => {
 const stopDrag = event => {
   let node = event.target.getContainer()
   node[SMap.LAYER_MARKER].style.cursor = "move"
-  let dragCoords = event.target.getCoords()
-  coords[(event.target._id - 1).toString()] = dragCoords
+  coords[(event.target._id - 1).toString()] = event.target.getCoords()
   addRoute(coords)
 }
 
@@ -183,8 +182,8 @@ saveImg.onclick = () => {
     function(canvas) {
       let link = document.createElement("a")
       document.body.appendChild(link)
-      link.download = "map.jpg"
-      link.href = canvas.toDataURL()
+      link.download = "mapa.png"
+      link.href = canvas.toDataURL("image/png")
       link.target = "_blank"
       link.click()
     }
