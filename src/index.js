@@ -16,7 +16,7 @@ let mouse = new SMap.Control.Mouse(
 map.addControl(mouse);
 
 // Change turist trailLayer colors to grayscale
-let turistMap = document.getElementsByTagName('div')[8];
+let turistMap = document.getElementsByTagName('div')[9];
 turistMap.style.filter = 'grayscale(100%)';
 
 let strokeColor = 'red';
@@ -177,45 +177,57 @@ removePointMarkers.onclick = () => {
   }
 };
 
+let saveImgClicked = false;
 const saveImg = () => {
-  const bigMapSize = () => {
-    showLoader();
-    const node = document.getElementById('map');
-    node.removeAttribute('min-height');
-    node.style.height = '5000px';
-    node.style.width = '5000px';
-    map.addControl(new SMap.Control.Sync());
-  };
+  if (!saveImgClicked) {
+    showAlert();
+    saveImgClicked = true;
+  } else {
+    showAlert();
+    const bigMapSize = () => {
+      showLoader();
+      const node = document.getElementById('map');
+      node.removeAttribute('min-height');
+      node.style.height = '5000px';
+      node.style.width = '5000px';
+      map.addControl(new SMap.Control.Sync());
+    };
 
-  const normalMapSize = () => {
-    const node = document.getElementById('map');
-    node.style.width = null;
-    node.style.height = null;
-    node.style.minHeight = '90vh';
-    map.addControl(new SMap.Control.Sync());
-    showLoader();
-  };
+    const normalMapSize = () => {
+      const node = document.getElementById('map');
+      node.style.width = null;
+      node.style.height = null;
+      node.style.minHeight = '90vh';
+      map.addControl(new SMap.Control.Sync());
+      showLoader();
+    };
 
-  let promise = new Promise(bigMapSize);
-  promise
-    .then(
-      setTimeout(
-        () =>
-          domtoimage
-            .toPng(document.getElementById('map'))
-            .then(dataUrl => {
-              const link = document.createElement('a');
-              link.download = 'mapa.png';
-              link.href = dataUrl;
-              link.click();
-            })
-            .catch(error => {
-              console.error('Oops, no picture generated :(', error);
-            }),
-        5000
+    let promise = new Promise(bigMapSize);
+    promise
+      .then(
+        setTimeout(
+          () =>
+            domtoimage
+              .toPng(document.getElementById('map'))
+              .then(dataUrl => {
+                const link = document.createElement('a');
+                link.download = 'mapa.png';
+                link.href = dataUrl;
+                link.click();
+              })
+              .catch(error => {
+                console.error('Oops, no picture generated :(', error);
+              }),
+          5000
+        )
       )
-    )
-    .then(setTimeout(() => normalMapSize(), 15000));
+      .then(setTimeout(() => normalMapSize(), 15000));
+  }
+};
+
+const showAlert = () => {
+  const saveImageAlert = document.getElementById('saveImageAlert');
+  saveImageAlert.hidden = !saveImageAlert.hidden;
 };
 
 const showLoader = () => {

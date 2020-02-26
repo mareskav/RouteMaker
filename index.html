@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>RouteMaker</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./images/favicon.png"
+    />
     <script src="https://api.mapy.cz/loader.js"></script>
     <script>
       Loader.load(null, {
@@ -118,7 +123,13 @@
         </form>
       </div>
     </nav>
-    <div id="map"></div>
+    <div id="map">
+      <div id="saveImageAlert" class="alert alert-danger" role="alert" hidden>
+        Před uložením obrázku zvolte střed mapy, např. ve středu trasy a upravte
+        rozlišení mapy kolečkem myši či tlačítky + / -. Poté klikněte znovu na
+        "Uložit obrázek", mapa se vám brzy vygeneruje a stáhne :)
+      </div>
+    </div>
     <div id="overlay" hidden></div>
     <div id="loader" hidden></div>
     <script src="src/index.js"></script>
