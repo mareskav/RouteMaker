@@ -124,16 +124,39 @@
       </div>
     </nav>
     <div id="map">
-      <div id="saveImageAlert" class="alert alert-success" role="alert" hidden>
-        Před uložením obrázku zvolte střed mapy, např. ve středu trasy a upravte
-        rozlišení mapy kolečkem myši či tlačítky + / -. Poté klikněte znovu na
-        "Uložit obrázek", mapa se vám brzy vygeneruje a stáhne :)
+      <div
+        id="saveImageAlert"
+        class="alert alert-success fade show"
+        role="alert"
+        hidden
+      >
+        <button
+          type="button"
+          class="close"
+          aria-label="Close"
+          onclick="showAlert()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="alert-heading">Před uložením obrázku</h4>
+        <p>
+          Zvolte střed mapy, např. ve středu trasy a upravte meřítko mapy
+          kolečkem myši či tlačítky + / -. Poté klikněte znovu na "Uložit
+          obrázek", mapa se vám brzy vygeneruje a stáhne :)
+        </p>
+        <hr />
+        <p class="mb-0">
+          Výsledná mapa ani trasa nemusí být vidět na vaší obrazovce celá. Velmi
+          záleží na měřítku mapy. Pokud Vám kus mapy či trasy chybí, zkuste
+          zvolit jiné měřítko nebo jiný střed mapy.
+        </p>
       </div>
     </div>
     <div id="overlay" hidden></div>
     <div id="loader" hidden></div>
     <script src="src/index.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   </body>

@@ -177,11 +177,16 @@ removePointMarkers.onclick = () => {
   }
 };
 
-let saveImgClicked = false;
+let alertShow = false;
+const showAlert = () => {
+  const saveImageAlert = document.getElementById('saveImageAlert');
+  saveImageAlert.hidden = !saveImageAlert.hidden;
+  alertShow = !alertShow
+};
+
 const saveImg = () => {
-  if (!saveImgClicked) {
+  if (!alertShow) {
     showAlert();
-    saveImgClicked = true;
   } else {
     showAlert();
     const bigMapSize = () => {
@@ -218,16 +223,11 @@ const saveImg = () => {
               .catch(error => {
                 console.error('Oops, no picture generated :(', error);
               }),
-          5000
+          10000
         )
       )
       .then(setTimeout(() => normalMapSize(), 15000));
   }
-};
-
-const showAlert = () => {
-  const saveImageAlert = document.getElementById('saveImageAlert');
-  saveImageAlert.hidden = !saveImageAlert.hidden;
 };
 
 const showLoader = () => {
