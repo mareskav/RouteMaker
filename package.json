@@ -1,7 +1,7 @@
 {
   "name": "routemaker",
   "version": "1.0.0",
-  "description": "App for creating routes using mapy.cz API",
+  "description": "App for creating maps and routes using mapy.cz API",
   "main": "index.html",
   "scripts": {
     "start": "lite-server",

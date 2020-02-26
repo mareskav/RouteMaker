@@ -19,8 +19,8 @@
 
 .smap-suggest {
   position: absolute;
-  height: -100px;
-  right: 0;
+  top: 60px;
+  right: 20px;
 }
 
 .alert {
