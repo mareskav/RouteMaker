@@ -1,9 +1,9 @@
 # RouteMaker BETA
 
-RouteMaker is trying to help you with creating, measuring and downloading own map routes.
+RouteMaker is trying to help with creating, measuring and downloading own maps and routes using https://mapy.cz/ maps and mapy.cz API.
 
-App is developed especially for the needs of Cestou Vysočiny trail organizers:
-https://www.stoky.cz/cestou-vysociny/a-1388 and is using mapy.cz API: https://api.mapy.cz/
+App is developed especially for needs of Cestou Vysočiny tourist organizers:
+https://www.stoky.cz/cestou-vysociny/a-1388
 
 ## Try it!
 You can try Beta version of the app there:
