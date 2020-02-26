@@ -1,27 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>RouteMaker</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.png">
     <script src="https://api.mapy.cz/loader.js"></script>
     <script>
       Loader.load(null, {
         suggest: true
-			})
-			</script>
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-      <link rel="stylesheet" href="src/index.css">
-</head>
+      });
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="src/index.css" />
+  </head>
 
-<body>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <a class="navbar-brand" href="#">RouteMaker</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -31,29 +42,53 @@
           <li class="nav-item">
             <a class="nav-link" href="#">
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="findRoute">
-                <label class="form-check-label" for="findRoute">Zadat body na cestách</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="findRoute"
+                />
+                <label class="form-check-label" for="findRoute"
+                  >Zadat body na cestách</label
+                >
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="lineRoute">
-                <label class="form-check-label" for="lineRoute">Zadat body mimo cesty</label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="lineRoute"
+                />
+                <label class="form-check-label" for="lineRoute"
+                  >Zadat body mimo cesty</label
+                >
               </div>
             </a>
           </li>
           <a id="routeLabel" class="nav-link" href="#">Délka trasy: 0 km</a>
           <li class="nav-item">
-            <a id="saveImg" class="nav-link" href="#">Uložit obrázek</a>
+            <a class="nav-link" onclick="saveImg()" href="#">Uložit obrázek</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-          Možnosti trasy
-        </a>
+            <a
+              class="nav-link dropdown-toggle"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              href="#"
+            >
+              Možnosti trasy
+            </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="#">
                 <label for="colorselector">Barva trasy: </label>
 
                 <form>
-                  <select id="colorselector" class="custom-select form-control" onchange="colorChange(this.value)">
+                  <select
+                    id="colorselector"
+                    class="custom-select form-control"
+                    onchange="colorChange(this.value)"
+                  >
                     <option value="red" selected="selected">červená</option>
                     <option value="blue">modrá</option>
                     <option value="green">zelená</option>
@@ -62,23 +97,33 @@
                     <option value="pink" data-color="pink">růžová</option>
                   </select>
                 </form>
-            </a>
+              </a>
               <div class="dropdown-divider"></div>
-              <a id="removePointMarkers" class="dropdown-item" href="#">Skrýt značky</a>
+              <a id="removePointMarkers" class="dropdown-item" href="#"
+                >Skrýt značky</a
+              >
             </div>
           </li>
         </ul>
         <form id="searchBar" class="form-inline .navbar-left my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Hledej místo..." aria-label="Search">
-          <button class="btn btn-primary my-2 my-sm-0" type="submit">Hledat</button>
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            placeholder="Hledej místo..."
+            aria-label="Search"
+          />
+          <button class="btn btn-primary my-2 my-sm-0" type="submit">
+            Hledat
+          </button>
         </form>
       </div>
     </nav>
-    <div id="map" style="min-height:90vh"></div>
+    <div id="map"></div>
+    <div id="overlay" hidden></div>
+    <div id="loader" hidden></div>
     <script src="src/index.js"></script>
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-</body>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+  </body>
 </html>

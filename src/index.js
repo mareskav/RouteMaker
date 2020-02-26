@@ -177,17 +177,53 @@ removePointMarkers.onclick = () => {
   }
 };
 
-saveImg.onclick = () => {
-  html2canvas(document.getElementById('map'), (allowTaint = true)).then(
-    function(canvas) {
-      let link = document.createElement('a');
-      document.body.appendChild(link);
-      link.download = 'mapa.png';
-      link.href = canvas.toDataURL('image/png');
-      link.target = '_blank';
-      link.click();
-    }
-  );
+const saveImg = () => {
+  const bigMapSize = () => {
+    showLoader();
+    const node = document.getElementById('map');
+    node.removeAttribute('min-height');
+    node.style.height = '5000px';
+    node.style.width = '5000px';
+    map.addControl(new SMap.Control.Sync());
+  };
+
+  const normalMapSize = () => {
+    const node = document.getElementById('map');
+    node.style.width = null;
+    node.style.height = null;
+    node.style.minHeight = '90vh';
+    console.log('Tadyyy');
+    map.addControl(new SMap.Control.Sync());
+    showLoader();
+  };
+
+  let promise = new Promise(bigMapSize);
+  promise
+    .then(
+      setTimeout(
+        () =>
+          domtoimage
+            .toPng(document.getElementById('map'))
+            .then(dataUrl => {
+              const link = document.createElement('a');
+              link.download = 'mapa.png';
+              link.href = dataUrl;
+              link.click();
+            })
+            .catch(error => {
+              console.error('Oops, no picture generated :(', error);
+            }),
+        5000
+      )
+    )
+    .then(setTimeout(() => normalMapSize(), 15000));
+};
+
+const showLoader = () => {
+  const loader = document.getElementById('loader');
+  const overlay = document.getElementById('overlay');
+  loader.hidden = !loader.hidden;
+  overlay.hidden = !overlay.hidden;
 };
 
 // Search place and center map to it

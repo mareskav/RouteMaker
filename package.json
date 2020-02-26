@@ -1,21 +1,23 @@
 {
   "name": "routemaker",
   "version": "1.0.0",
-  "description": "This is a static template with no bundling",
+  "description": "App for creating routes using mapy.cz API",
   "main": "index.html",
   "scripts": {
+    "start": "lite-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codesandbox-app/static-template.git"
+    "url": "git+https://github.com/mareskav/RouteMaker.git"
   },
   "keywords": [],
-  "author": "Ives van Hoorne",
+  "author": "Vaclav Mareska",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/codesandbox-app/static-template/issues"
+  "dependencies": {
+    "dom-to-image": "^2.6.0"
   },
-  "homepage": "https://github.com/codesandbox-app/static-template#readme",
-  "dependencies": {}
+  "devDependencies": {
+    "lite-server": "^2.5.4"
+  }
 }

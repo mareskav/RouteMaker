@@ -5,7 +5,6 @@ import {
   addPoints,
   addLinePoints
 } from './index.js';
-import { SMap, JAK } from 'loader.js';
 
 let coords = [];
 
