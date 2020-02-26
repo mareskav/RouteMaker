@@ -192,7 +192,6 @@ const saveImg = () => {
     node.style.width = null;
     node.style.height = null;
     node.style.minHeight = '90vh';
-    console.log('Tadyyy');
     map.addControl(new SMap.Control.Sync());
     showLoader();
   };
