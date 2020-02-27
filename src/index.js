@@ -89,20 +89,19 @@ const addPointMarker = event => {
   });
   marker.decorate(SMap.Marker.Feature.Draggable);
   numOfClicks += 1;
-  //console.log(marker.getId())
   markerLayer.addMarker(marker);
   coords.push(gpsCoords);
   addRoute(coords);
 };
 
-findRoute.onclick = () => {
+const findRoute = () => {
   let checkBox = document.getElementById('findRoute');
   let mousePointer = document.getElementsByTagName('div')[7];
   mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
   addPoints = checkBox.checked ? 'true' : 'false';
 };
 
-lineRoute.onclick = () => {
+const lineRoute = () => {
   let checkBox = document.getElementById('lineRoute');
   let mousePointer = document.getElementsByTagName('div')[7];
   mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
