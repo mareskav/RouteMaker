@@ -97,14 +97,14 @@ const addPointMarker = event => {
 
 findRoute.onclick = () => {
   let checkBox = document.getElementById('findRoute');
-  let mousePointer = document.getElementsByTagName('div')[6];
+  let mousePointer = document.getElementsByTagName('div')[7];
   mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
   addPoints = checkBox.checked ? 'true' : 'false';
 };
 
 lineRoute.onclick = () => {
   let checkBox = document.getElementById('lineRoute');
-  let mousePointer = document.getElementsByTagName('div')[6];
+  let mousePointer = document.getElementsByTagName('div')[7];
   mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
   addLinePoints = checkBox.checked ? 'true' : 'false';
 };
