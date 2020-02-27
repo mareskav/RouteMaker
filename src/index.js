@@ -57,8 +57,7 @@ const stopDrag = event => {
   let node = event.target.getContainer();
   node[SMap.LAYER_MARKER].style.cursor = 'move';
   coords[(event.target._id - 1).toString()] = event.target.getCoords();
-  console.log(coords[(event.target._id - 1).toString()]);
-  addRoute();
+  // addRoute();
 };
 
 const addPointMarker = event => {
@@ -93,7 +92,6 @@ const addPointMarker = event => {
   numOfClicks += 1;
   markerLayer.addMarker(marker);
   coords.push(gpsCoords);
-  console.log('tadyyy');
   addRoute();
 };
 
