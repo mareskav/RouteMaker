@@ -19,22 +19,24 @@ map.addControl(mouse);
 let turistMap = document.getElementsByTagName('div')[9];
 turistMap.style.filter = 'grayscale(100%)';
 
+// Global variables
+let addPoints = null;
+let coords = [];
+let totalLength = 0.0;
+let numOfClicks = 1;
 let strokeColor = 'red';
+let alertShow = false;
+
 colorChange = trailColor => {
   strokeColor = trailColor;
-  addRoute(coords);
+  Object.values(routeLayer._geometries).map(
+    item => (item._options.color = trailColor)
+  );
+  routeLayer.redraw();
 };
 
-// Find easiest route
-let addPoints = 'false';
-let addLinePoints = 'false';
-let coords = [];
-
 const signalListener = event => {
-  if (
-    event.type === 'map-click' &&
-    (addPoints === 'true' || addLinePoints === 'true')
-  ) {
+  if (event.type === 'map-click' && addPoints !== null) {
     addPointMarker(event);
   }
   if (event.type === 'marker-drag-start') {
@@ -55,10 +57,10 @@ const stopDrag = event => {
   let node = event.target.getContainer();
   node[SMap.LAYER_MARKER].style.cursor = 'move';
   coords[(event.target._id - 1).toString()] = event.target.getCoords();
-  addRoute(coords);
+  console.log(coords[(event.target._id - 1).toString()]);
+  addRoute();
 };
 
-let numOfClicks = 1;
 const addPointMarker = event => {
   let numberMarker = JAK.mel('div');
   let makerImg = JAK.mel('img', {
@@ -91,81 +93,72 @@ const addPointMarker = event => {
   numOfClicks += 1;
   markerLayer.addMarker(marker);
   coords.push(gpsCoords);
-  addRoute(coords);
+  console.log('tadyyy');
+  addRoute();
 };
 
 const findRoute = () => {
-  let checkBox = document.getElementById('findRoute');
-  let mousePointer = document.getElementsByTagName('div')[7];
-  mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
-  addPoints = checkBox.checked ? 'true' : 'false';
-};
+  let normalRouteCheckBox = document.getElementById('findRoute');
+  let lineRouteCheckBox = document.getElementById('lineRoute');
 
-const lineRoute = () => {
-  let checkBox = document.getElementById('lineRoute');
   let mousePointer = document.getElementsByTagName('div')[7];
-  mousePointer.style.cursor = checkBox.checked ? 'crosshair' : 'move';
-  addLinePoints = checkBox.checked ? 'true' : 'false';
-};
+  mousePointer.style.cursor =
+    normalRouteCheckBox.checked || lineRouteCheckBox.checked
+      ? 'crosshair'
+      : 'move';
 
-let totalLength = 0.0;
+  if (normalRouteCheckBox.checked && addPoints !== 'normal') {
+    addPoints = 'normal';
+    lineRouteCheckBox.checked = false;
+  }
+  if (lineRouteCheckBox.checked && addPoints !== 'line') {
+    addPoints = 'line';
+    normalRouteCheckBox.checked = false;
+  }
+  if (!normalRouteCheckBox.checked && !lineRouteCheckBox.checked) {
+    addPoints = null;
+  }
+};
 
 const addRoute = () => {
-  // TODO: Pridat if, kdyz jsou jen 2 body
   let options = {
     geometry: true,
     criterion: 'turist1'
   };
-  if (addLinePoints === 'true') {
-    SMap.Route.route(coords, options).then(createLineRoute);
-  } else {
-    SMap.Route.route(coords.slice(-2), options).then(createRoute);
+  if (coords.length > 1) {
+    coords = coords.slice(-2);
+    SMap.Route.route(coords, options).then(createRoute);
   }
 };
 
 const createRoute = route => {
   let lengthLabel = document.getElementById('routeLabel');
-  //routeLayer.removeAll()
   let newCoords = route.getResults().geometry;
   let newLength = route.getResults().length;
-  totalLength = totalLength + newLength;
+  totalLength += newLength;
   lengthLabel.innerHTML =
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
   //let place = map.computeCenterZoom(newCoords);
   //map.setCenterZoom(place[0], place[1]);
-  let geometry = new SMap.Geometry(SMap.GEOMETRY_POLYLINE, null, newCoords, {
-    color: strokeColor
+  const geometryOptions = {
+    color: strokeColor,
+    outlineOpacity: 0.0
     //opacity: 0.5,
-    //outlineOpacity: 0.0,
     //width: 5,
-  });
-  //console.log(geometry.getOptions())
-  routeLayer.addGeometry(geometry);
-};
+  };
 
-const createLineRoute = route => {
-  let lengthLabel = document.getElementById('routeLabel');
-  //routeLayer.removeAll()
-  let newLength = route.getResults().length;
-  totalLength = totalLength + newLength;
-  lengthLabel.innerHTML =
-    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
+  // newCoords for normal route, coords for line route
   let geometry = new SMap.Geometry(
     SMap.GEOMETRY_POLYLINE,
     null,
-    coords.slice(-2),
-    {
-      color: strokeColor
-      //opacity: 0.5,
-      //outlineOpacity: 0.0,
-      //width: 5,
-    }
+    addPoints === 'line' ? coords : newCoords,
+    geometryOptions
   );
-  //console.log(geometry.getOptions())
+  // console.log(geometry.getOptions());
   routeLayer.addGeometry(geometry);
 };
 
-removePointMarkers.onclick = () => {
+const removePointMarkers = () => {
   let pointMarkersText = document.getElementById('removePointMarkers');
   if (pointMarkersText.innerHTML === 'Skrýt značky') {
     pointMarkersText.innerHTML = 'Ukázat značky';
@@ -176,11 +169,10 @@ removePointMarkers.onclick = () => {
   }
 };
 
-let alertShow = false;
 const showAlert = () => {
   const saveImageAlert = document.getElementById('saveImageAlert');
   saveImageAlert.hidden = !saveImageAlert.hidden;
-  alertShow = !alertShow
+  alertShow = !alertShow;
 };
 
 const saveImg = () => {

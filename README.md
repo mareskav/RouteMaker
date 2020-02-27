@@ -2,7 +2,7 @@
 
 RouteMaker is trying to help with creating, measuring and downloading own maps and routes using https://mapy.cz/ maps and mapy.cz API.
 
-App is developed especially for needs of Cestou Vysočiny tourist organizers:
+App is developed especially for needs of Cestou Vysočiny trailer and tourist organizers:
 https://www.stoky.cz/cestou-vysociny/a-1388
 
 ## Try it!
