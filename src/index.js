@@ -157,6 +157,17 @@ const createRoute = route => {
   routeLayer.addGeometry(geometry);
 };
 
+const removeRoute = () => {
+  let lengthLabel = document.getElementById('routeLabel');
+  routeLayer.removeAll();
+  markerLayer.removeAll();
+  coords = [];
+  totalLength = 0.0;
+  numOfClicks = 1;
+  lengthLabel.innerHTML =
+    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
+};
+
 const removePointMarkers = () => {
   let pointMarkersText = document.getElementById('removePointMarkers');
   if (pointMarkersText.innerHTML === 'Skrýt značky') {
