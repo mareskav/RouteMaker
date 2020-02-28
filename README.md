@@ -11,5 +11,3 @@ https://mareskav.github.io/RouteMaker/
 
 ![](./images/preview.png?raw=true "Optional Title")
 
-### Known bugs:
-- Route color change broken for whole route when Points off the route feature was added.

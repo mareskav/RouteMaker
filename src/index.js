@@ -105,6 +105,7 @@ const findRoute = () => {
       ? 'crosshair'
       : 'move';
 
+  coords = coords.slice(-2);
   if (normalRouteCheckBox.checked && addPoints !== 'normal') {
     addPoints = 'normal';
     lineRouteCheckBox.checked = false;
@@ -131,7 +132,7 @@ const addRoute = () => {
 
 const createRoute = route => {
   let lengthLabel = document.getElementById('routeLabel');
-  let newCoords = route.getResults().geometry;
+  let newCoords = addPoints === 'normal' ? route.getResults().geometry : coords;
   let newLength = route.getResults().length;
   totalLength += newLength;
   lengthLabel.innerHTML =
@@ -149,7 +150,7 @@ const createRoute = route => {
   let geometry = new SMap.Geometry(
     SMap.GEOMETRY_POLYLINE,
     null,
-    addPoints === 'line' ? coords : newCoords,
+    newCoords,
     geometryOptions
   );
   // console.log(geometry.getOptions());
