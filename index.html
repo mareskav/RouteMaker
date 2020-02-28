@@ -105,6 +105,14 @@
                   </select>
                 </form>
               </a>
+              <form>
+                <a
+                  class="dropdown-item dropdownItemOwn"
+                  href="#"
+                  id="colorPicker"
+                  >Vybrat vlastní barvu</a
+                >
+              </form>
               <div class="dropdown-divider"></div>
               <a
                 id="removePointMarkers"
@@ -149,28 +157,30 @@
         </button>
         <h4 class="alert-heading">Před uložením obrázku</h4>
         <p>
-          Zvolte střed mapy, např. ve středu trasy anebo hledáním města či bodu
-          na mapě použitím vyhledávače "Hledej místo". Upravte meřítko mapy
-          kolečkem myši či tlačítky + / -<br />
+          Vypněte zadávání tras a zvolte střed mapy, např. posunutím mapy do středu trasy anebo hledáním
+          města či bodu na mapě vyhledávačem "Hledej místo...". Dále upravte
+          meřítko mapy kolečkem myši či tlačítky + / -<br />
           Poté klikněte znovu na "Uložit obrázek", mapa se vám brzy vygeneruje a
-          stáhne :) Klikněte na křížek vpravo, pokud chcete upozornění zavřít.
+          stáhne :) Klikněte na křížek vpravo, pokud chcete toto upozornění
+          zavřít.
         </p>
         <hr />
         <p class="mb-0">
           Výsledná mapa ani trasa nemusí být vidět na vaší obrazovce celá. Velmi
           záleží na měřítku mapy. Pokud Vám kus mapy či trasy chybí, zkuste
           zvolit jiné měřítko nebo jiný střed mapy.<br />
-          TIP: střed Štoky a měřítko 1200 m by mělo zaručit dostatečnou
-          podrobnost i velikost mapy pro většinu tras CestouVysočiny.
+          TIP: měřítko 1200 m by mělo zaručit dostatečnou podrobnost i velikost
+          mapy.
         </p>
       </div>
     </div>
     <div id="overlay" hidden></div>
     <div id="loader" hidden></div>
-    <script src="src/index.js"></script>
+    <script src="https://unpkg.com/vanilla-picker@2"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script src="src/index.js"></script>
   </body>
 </html>

@@ -23,6 +23,12 @@
   right: 20px;
 }
 
+.dropdownItemOwn.active, .dropdownItemOwn:active {
+  color: #6c757d !important;
+  text-decoration: none;
+  background-color: #ffffff !important;
+}
+
 .alert {
   margin: 10px 20px 20px 10px;
   position: relative;

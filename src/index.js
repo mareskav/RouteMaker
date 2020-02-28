@@ -99,7 +99,7 @@ const findRoute = () => {
   let normalRouteCheckBox = document.getElementById('findRoute');
   let lineRouteCheckBox = document.getElementById('lineRoute');
 
-  let mousePointer = document.getElementsByTagName('div')[7];
+  let mousePointer = document.getElementsByTagName('div')[19];
   mousePointer.style.cursor =
     normalRouteCheckBox.checked || lineRouteCheckBox.checked
       ? 'crosshair'
@@ -230,6 +230,14 @@ const saveImg = () => {
       .then(setTimeout(() => normalMapSize(), 15000));
   }
 };
+
+const parentBasic = document.querySelector('#colorPicker');
+popupBasic = new Picker(parentBasic);
+popupBasic.onDone = color => {
+  colorChange(color.rgbaString);
+};
+//Open the popup manually:
+popupBasic.openHandler();
 
 const showLoader = () => {
   const loader = document.getElementById('loader');
