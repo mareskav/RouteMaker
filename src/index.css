@@ -23,10 +23,15 @@
   right: 20px;
 }
 
-.dropdownItemOwn.active, .dropdownItemOwn:active {
+.dropdownItemOwn.active,
+.dropdownItemOwn:active {
   color: #6c757d !important;
   text-decoration: none;
   background-color: #ffffff !important;
+}
+
+.slider {
+  padding: 0 10px 0 10px;
 }
 
 .alert {

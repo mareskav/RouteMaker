@@ -71,9 +71,6 @@
             </a>
           </li>
           <a id="routeLabel" class="nav-link" href="#">Délka trasy: 0 km</a>
-          <li class="nav-item">
-            <a class="nav-link" onclick="saveImg()" href="#">Uložit obrázek</a>
-          </li>
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -89,7 +86,6 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="#">
                 <label for="colorselector">Barva trasy: </label>
-
                 <form>
                   <select
                     id="colorselector"
@@ -113,6 +109,16 @@
                   >Vybrat vlastní barvu</a
                 >
               </form>
+              <a class="dropdown-item" href="#"> Šířka trasy:</a>
+              <input
+                id="routeWidth"
+                type="range"
+                class="custom-range slider"
+                min="0.5"
+                max="10.5"
+                step="0.5"
+                onclick="routeWidthChange()"
+              />
               <div class="dropdown-divider"></div>
               <a
                 id="removePointMarkers"
@@ -125,6 +131,9 @@
                 >Vymazat trasu</a
               >
             </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="saveImg()" href="#">Uložit obrázek</a>
           </li>
         </ul>
         <form id="searchBar" class="form-inline .navbar-left my-2 my-lg-0">
@@ -157,9 +166,10 @@
         </button>
         <h4 class="alert-heading">Před uložením obrázku</h4>
         <p>
-          Vypněte zadávání tras a zvolte střed mapy, např. posunutím mapy do středu trasy anebo hledáním
-          města či bodu na mapě vyhledávačem "Hledej místo...". Dále upravte
-          meřítko mapy kolečkem myši či tlačítky + / -<br />
+          Vypněte zadávání tras a zvolte střed mapy, např. posunutím mapy do
+          středu trasy anebo hledáním města či bodu na mapě vyhledávačem "Hledej
+          místo...". Dále upravte meřítko mapy kolečkem myši či tlačítky + /
+          -<br />
           Poté klikněte znovu na "Uložit obrázek", mapa se vám brzy vygeneruje a
           stáhne :) Klikněte na křížek vpravo, pokud chcete toto upozornění
           zavřít.

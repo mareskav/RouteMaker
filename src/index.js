@@ -27,13 +27,6 @@ let numOfClicks = 1;
 let strokeColor = 'red';
 let alertShow = false;
 
-colorChange = trailColor => {
-  strokeColor = trailColor;
-  Object.values(routeLayer._geometries).map(
-    item => (item._options.color = trailColor)
-  );
-  routeLayer.redraw();
-};
 
 const signalListener = event => {
   if (event.type === 'map-click' && addPoints !== null) {
@@ -179,6 +172,22 @@ const removePointMarkers = () => {
   }
 };
 
+colorChange = trailColor => {
+  strokeColor = trailColor;
+  Object.values(routeLayer._geometries).map(
+    item => (item._options.color = trailColor)
+  );
+  routeLayer.redraw();
+};
+
+const routeWidthChange = () => {
+  const newRouteWidth = document.getElementById('routeWidth').value;
+    Object.values(routeLayer._geometries).map(
+    item => (item._options.width = newRouteWidth)
+  );
+  routeLayer.redraw();
+};
+
 const showAlert = () => {
   const saveImageAlert = document.getElementById('saveImageAlert');
   saveImageAlert.hidden = !saveImageAlert.hidden;
@@ -231,8 +240,9 @@ const saveImg = () => {
   }
 };
 
+// vanila-picker own color select
 const parentBasic = document.querySelector('#colorPicker');
-popupBasic = new Picker(parentBasic);
+popupBasic = new Picker({ parent: parentBasic, color: strokeColor });
 popupBasic.onDone = color => {
   colorChange(color.rgbaString);
 };
