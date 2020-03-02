@@ -24,7 +24,7 @@ let addPoints = null;
 let coords = [];
 let routeLength = [];
 let totalLength = 0.0;
-let numOfClicks = 1;
+let numOfClicks = 0;
 let strokeColor = 'red';
 let routeWidth = 5;
 let alertShow = false;
@@ -33,9 +33,6 @@ const signalListener = event => {
   if (event.type === 'map-click' && addPoints !== null) {
     addPointMarker(event);
   }
-  // if (event.type === 'marker-click') {
-  // showMarkerDistance(event.target._id);
-  // }
   if (event.type === 'marker-drag-start') {
     startDrag(event);
   }
@@ -86,10 +83,11 @@ const addPointMarker = event => {
     title: numOfClicks.toString(),
     url: numberMarker
   });
-  marker.decorate(SMap.Marker.Feature.Draggable);
+  // marker.decorate(SMap.Marker.Feature.Draggable);
+  marker.decorate(SMap.Marker.Feature.Card);
   numOfClicks += 1;
   markerLayer.addMarker(marker);
-  coords.push(gpsCoords);
+  coords = [...coords, gpsCoords];
   addRoute();
 };
 
@@ -134,29 +132,23 @@ const createRoute = route => {
     addPoints === 'normal' ? route.getResults().geometry : coords.slice(-2);
   let newLength = route.getResults().length;
   routeLength = [...routeLength, newLength];
-  // markerLayer._markers[numOfClicks - 1].marker._options.title = (
-  //   newLength / 1000.0
-  // ).toString();
-
-  // markerLayer.getMarkers()[
-  //   numOfClicks - 2
-  // ]._options.title = newLength.toString();
-  // markerLayer.getMarkers()[
-  //   numOfClicks - 2
-  // ].dom.container[3].title = newLength.toString();
-  // console.log(newLength);
-  // const aaa = document.querySelector('[title="' + numOfClicks + '"]');
-  // console.log(aaa);
 
   const totalLength = routeLength.reduce((a, b) => a + b, 0);
   lengthLabel.innerHTML =
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
   //let place = map.computeCenterZoom(newCoords);
   //map.setCenterZoom(place[0], place[1]);
+
+  // Add actual distance in km to marker title
+  const markerTotalLength = document.querySelector(
+    '[title="' + (numOfClicks - 1).toString() + '"]'
+  );
+  markerTotalLength.title = (totalLength / 1000.0).toString() + ' km';
+
   const geometryOptions = {
     color: strokeColor,
     outlineOpacity: 0.0,
-    width: routeWidth,
+    width: routeWidth
     //opacity: 0.5
   };
 
@@ -176,7 +168,7 @@ const removeRoute = () => {
   markerLayer.removeAll();
   coords = [];
   totalLength = 0.0;
-  numOfClicks = 1;
+  numOfClicks = 0;
   lengthLabel.innerHTML =
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
 };
@@ -190,11 +182,6 @@ const hidePointMarkers = () => {
     pointMarkersText.innerHTML = 'Skrýt značky';
     markerLayer.enable();
   }
-};
-
-const showMarkerDistance = markerId => {
-  console.log(routeLength);
-  console.log(routeLength[markerId - 2]);
 };
 
 colorChange = trailColor => {
