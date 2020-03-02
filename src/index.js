@@ -7,7 +7,7 @@ map.addDefaultLayer(SMap.DEF_BASE).enable();
 map.addDefaultLayer(SMap.DEF_TRAIL).enable();
 let markerLayer = map.addLayer(new SMap.Layer.Marker()).enable();
 let routeLayer = map.addLayer(new SMap.Layer.Geometry()).enable();
-map.addDefaultContextMenu(); // Menu for right mouse click
+// map.addDefaultContextMenu(); // Menu for right mouse click
 map.addDefaultControls();
 map.addControl(new SMap.Control.Sync());
 let mouse = new SMap.Control.Mouse(
@@ -22,16 +22,20 @@ turistMap.style.filter = 'grayscale(100%)';
 // Global variables
 let addPoints = null;
 let coords = [];
+let routeLength = [];
 let totalLength = 0.0;
 let numOfClicks = 1;
 let strokeColor = 'red';
+let routeWidth = 5;
 let alertShow = false;
-
 
 const signalListener = event => {
   if (event.type === 'map-click' && addPoints !== null) {
     addPointMarker(event);
   }
+  // if (event.type === 'marker-click') {
+  // showMarkerDistance(event.target._id);
+  // }
   if (event.type === 'marker-drag-start') {
     startDrag(event);
   }
@@ -79,6 +83,7 @@ const addPointMarker = event => {
 
   let gpsCoords = SMap.Coords.fromEvent(event.data.event, map);
   let marker = new SMap.Marker(gpsCoords, numOfClicks.toString(), {
+    title: numOfClicks.toString(),
     url: numberMarker
   });
   marker.decorate(SMap.Marker.Feature.Draggable);
@@ -124,22 +129,37 @@ const addRoute = () => {
 
 const createRoute = route => {
   let lengthLabel = document.getElementById('routeLabel');
+  // newCoords for normal route, coords for line route
   let newCoords =
     addPoints === 'normal' ? route.getResults().geometry : coords.slice(-2);
   let newLength = route.getResults().length;
-  totalLength += newLength;
+  routeLength = [...routeLength, newLength];
+  // markerLayer._markers[numOfClicks - 1].marker._options.title = (
+  //   newLength / 1000.0
+  // ).toString();
+
+  // markerLayer.getMarkers()[
+  //   numOfClicks - 2
+  // ]._options.title = newLength.toString();
+  // markerLayer.getMarkers()[
+  //   numOfClicks - 2
+  // ].dom.container[3].title = newLength.toString();
+  // console.log(newLength);
+  // const aaa = document.querySelector('[title="' + numOfClicks + '"]');
+  // console.log(aaa);
+
+  const totalLength = routeLength.reduce((a, b) => a + b, 0);
   lengthLabel.innerHTML =
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
   //let place = map.computeCenterZoom(newCoords);
   //map.setCenterZoom(place[0], place[1]);
   const geometryOptions = {
     color: strokeColor,
-    outlineOpacity: 0.0
-    //opacity: 0.5,
-    //width: 5,
+    outlineOpacity: 0.0,
+    width: routeWidth,
+    //opacity: 0.5
   };
 
-  // newCoords for normal route, coords for line route
   let geometry = new SMap.Geometry(
     SMap.GEOMETRY_POLYLINE,
     null,
@@ -161,7 +181,7 @@ const removeRoute = () => {
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
 };
 
-const removePointMarkers = () => {
+const hidePointMarkers = () => {
   let pointMarkersText = document.getElementById('removePointMarkers');
   if (pointMarkersText.innerHTML === 'Skrýt značky') {
     pointMarkersText.innerHTML = 'Ukázat značky';
@@ -170,6 +190,11 @@ const removePointMarkers = () => {
     pointMarkersText.innerHTML = 'Skrýt značky';
     markerLayer.enable();
   }
+};
+
+const showMarkerDistance = markerId => {
+  console.log(routeLength);
+  console.log(routeLength[markerId - 2]);
 };
 
 colorChange = trailColor => {
@@ -182,7 +207,8 @@ colorChange = trailColor => {
 
 const routeWidthChange = () => {
   const newRouteWidth = document.getElementById('routeWidth').value;
-    Object.values(routeLayer._geometries).map(
+  routeWidth = newRouteWidth;
+  Object.values(routeLayer._geometries).map(
     item => (item._options.width = newRouteWidth)
   );
   routeLayer.redraw();
