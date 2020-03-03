@@ -202,11 +202,11 @@ const changeTouristMapColour = () => {
 
 const changeRouteMapColour = () => {
   let pointMarkersText = document.getElementById('changeRouteMapColour');
-  if (pointMarkersText.innerHTML === 'Černobílé turistické trasy') {
-    pointMarkersText.innerHTML = 'Barevné turistické trasy';
+  if (pointMarkersText.innerHTML === 'Černobílé vlastní a turistické trasy') {
+    pointMarkersText.innerHTML = 'Barevné vlastní a turistické trasy';
     trailMap.style.filter = 'grayscale(100%)';
   } else {
-    pointMarkersText.innerHTML = 'Černobílé turistické trasy';
+    pointMarkersText.innerHTML = 'Černobílé vlastní a turistické trasy';
     trailMap.style.filter = 'grayscale(0%)';
   }
 };
