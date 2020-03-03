@@ -20,13 +20,17 @@ let turistMap = document.getElementsByTagName('div')[9];
 turistMap.style.filter = 'grayscale(100%)';
 
 // Global variables
+//TODO: Get rid of global variables after testing with mapy.cz API is finished
 let addPoints = null;
+let marker = [];
+let geometry = [];
 let coords = [];
 let routeLength = [];
 let totalLength = 0.0;
 let numOfClicks = 0;
 let strokeColor = 'red';
 let routeWidth = 5;
+
 let alertShow = false;
 
 const signalListener = event => {
@@ -42,17 +46,17 @@ const signalListener = event => {
 };
 map.getSignals().addListener(window, '*', signalListener);
 
-const startDrag = event => {
-  let node = event.target.getContainer();
-  node[SMap.LAYER_MARKER].style.cursor = 'grab';
-};
-
-const stopDrag = event => {
-  let node = event.target.getContainer();
-  node[SMap.LAYER_MARKER].style.cursor = 'move';
-  coords[(event.target._id - 1).toString()] = event.target.getCoords();
-  // addRoute();
-};
+// const startDrag = event => {
+//   let node = event.target.getContainer();
+//   node[SMap.LAYER_MARKER].style.cursor = 'grab';
+// };
+//
+// const stopDrag = event => {
+//   let node = event.target.getContainer();
+//   node[SMap.LAYER_MARKER].style.cursor = 'move';
+//   coords[(event.target._id - 1).toString()] = event.target.getCoords();
+//   addRoute();
+// };
 
 const addPointMarker = event => {
   let numberMarker = JAK.mel('div');
@@ -79,14 +83,15 @@ const addPointMarker = event => {
   numberMarker.appendChild(numberText);
 
   let gpsCoords = SMap.Coords.fromEvent(event.data.event, map);
-  let marker = new SMap.Marker(gpsCoords, numOfClicks.toString(), {
+  const newMarker = new SMap.Marker(gpsCoords, numOfClicks.toString(), {
     title: numOfClicks.toString(),
     url: numberMarker
   });
+  marker = [...marker, newMarker];
   // marker.decorate(SMap.Marker.Feature.Draggable);
-  marker.decorate(SMap.Marker.Feature.Card);
+  // marker.decorate(SMap.Marker.Feature.Card);
   numOfClicks += 1;
-  markerLayer.addMarker(marker);
+  markerLayer.addMarker(newMarker);
   coords = [...coords, gpsCoords];
   addRoute();
 };
@@ -120,8 +125,7 @@ const addRoute = () => {
     criterion: 'turist1'
   };
   if (coords.length > 1) {
-    coords = coords.slice(-2);
-    SMap.Route.route(coords, options).then(createRoute);
+    SMap.Route.route(coords.slice(-2), options).then(createRoute);
   }
 };
 
@@ -152,14 +156,14 @@ const createRoute = route => {
     //opacity: 0.5
   };
 
-  let geometry = new SMap.Geometry(
+  const newGeometry = new SMap.Geometry(
     SMap.GEOMETRY_POLYLINE,
     null,
     newCoords,
     geometryOptions
   );
-  // console.log(geometry.getOptions());
-  routeLayer.addGeometry(geometry);
+  geometry = [...geometry, newGeometry];
+  routeLayer.addGeometry(newGeometry);
 };
 
 const removeRoute = () => {
@@ -182,6 +186,22 @@ const hidePointMarkers = () => {
     pointMarkersText.innerHTML = 'Skrýt značky';
     markerLayer.enable();
   }
+};
+
+const removeLastMarker = () => {
+  //TODO: Too many variables, remove some
+  coords.splice(-1, 1);
+  numOfClicks -= 1;
+  markerLayer.removeMarker(marker.slice(-1)[0]);
+  routeLayer.removeGeometry(geometry.slice(-1)[0]);
+  marker.pop();
+  geometry.pop();
+  routeLength.pop();
+
+  const lengthLabel = document.getElementById('routeLabel');
+  totalLength = routeLength.reduce((a, b) => a + b, 0);
+  lengthLabel.innerHTML =
+    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
 };
 
 colorChange = trailColor => {
