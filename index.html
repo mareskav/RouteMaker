@@ -134,8 +134,36 @@
               >
             </div>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" onclick="saveImg()" href="#">Uložit obrázek</a>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              href="#"
+            >
+              Možnosti mapy
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a
+                id="changeTouristMapColour"
+                class="dropdown-item"
+                href="#"
+                onclick="changeTouristMapColour()"
+                >Barevná podkladová mapa</a
+              >
+              <a
+                id="changeRouteMapColour"
+                class="dropdown-item"
+                href="#"
+                onclick="changeRouteMapColour()"
+                >Černobílé turistické trasy</a
+              >
+              <a class="dropdown-item" onclick="saveImg()" href="#"
+                >Uložit obrázek</a
+              >
+            </div>
           </li>
         </ul>
         <form id="searchBar" class="form-inline .navbar-left my-2 my-lg-0">
@@ -172,9 +200,9 @@
           středu trasy anebo hledáním města či bodu na mapě vyhledávačem "Hledej
           místo...". Dále upravte meřítko mapy kolečkem myši či tlačítky + /
           -<br />
-          Poté klikněte znovu na "Uložit obrázek", mapa se vám brzy vygeneruje a
-          stáhne :) Klikněte na křížek vpravo, pokud chcete toto upozornění
-          zavřít.
+          Poté klikněte znovu na "Možnosti mapy" -> "Uložit obrázek", mapa se
+          vám brzy vygeneruje a stáhne :) Klikněte na křížek vpravo, pokud
+          chcete toto upozornění zavřít.
         </p>
         <hr />
         <p class="mb-0">

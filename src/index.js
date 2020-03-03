@@ -15,9 +15,10 @@ let mouse = new SMap.Control.Mouse(
 );
 map.addControl(mouse);
 
-// Change turist trailLayer colors to grayscale
-let turistMap = document.getElementsByTagName('div')[9];
-turistMap.style.filter = 'grayscale(100%)';
+// Change tourist or trail Layer colours to grayscale
+let touristMap = document.getElementsByTagName('div')[10];
+touristMap.style.filter = 'grayscale(100%)';
+let trailMap = document.getElementsByTagName('div')[8];
 
 // Global variables
 //TODO: Get rid of global variables after testing with mapy.cz API is finished
@@ -100,7 +101,7 @@ const findRoute = () => {
   let normalRouteCheckBox = document.getElementById('findRoute');
   let lineRouteCheckBox = document.getElementById('lineRoute');
 
-  let mousePointer = document.getElementsByTagName('div')[19];
+  let mousePointer = document.getElementsByTagName('div')[20];
   mousePointer.style.cursor =
     normalRouteCheckBox.checked || lineRouteCheckBox.checked
       ? 'crosshair'
@@ -188,6 +189,28 @@ const hidePointMarkers = () => {
   }
 };
 
+const changeTouristMapColour = () => {
+  const pointMarkersText = document.getElementById('changeTouristMapColour');
+  if (pointMarkersText.innerHTML === 'Barevná podkladová mapa') {
+    pointMarkersText.innerHTML = 'Černobílá podkladová mapa';
+    touristMap.style.filter = 'grayscale(0%)';
+  } else {
+    pointMarkersText.innerHTML = 'Barevná podkladová mapa';
+    touristMap.style.filter = 'grayscale(100%)';
+  }
+};
+
+const changeRouteMapColour = () => {
+  let pointMarkersText = document.getElementById('changeRouteMapColour');
+  if (pointMarkersText.innerHTML === 'Černobílé turistické trasy') {
+    pointMarkersText.innerHTML = 'Barevné turistické trasy';
+    trailMap.style.filter = 'grayscale(100%)';
+  } else {
+    pointMarkersText.innerHTML = 'Černobílé turistické trasy';
+    trailMap.style.filter = 'grayscale(0%)';
+  }
+};
+
 const removeLastMarker = () => {
   //TODO: Too many variables, remove some
   coords.splice(-1, 1);
@@ -204,7 +227,7 @@ const removeLastMarker = () => {
     'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
 };
 
-colorChange = trailColor => {
+const colorChange = trailColor => {
   strokeColor = trailColor;
   Object.values(routeLayer._geometries).map(
     item => (item._options.color = trailColor)
