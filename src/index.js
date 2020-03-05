@@ -171,7 +171,10 @@ const removeRoute = () => {
   let lengthLabel = document.getElementById('routeLabel');
   routeLayer.removeAll();
   markerLayer.removeAll();
+  marker = [];
+  geometry = [];
   coords = [];
+  routeLength = [];
   totalLength = 0.0;
   numOfClicks = 0;
   lengthLabel.innerHTML =
