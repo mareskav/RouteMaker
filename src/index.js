@@ -132,15 +132,21 @@ const addRoute = () => {
 
 const createRoute = route => {
   let lengthLabel = document.getElementById('routeLabel');
+  let currentCoords = coords.slice(-2);
   // newCoords for normal route, coords for line route
   let newCoords =
-    addPoints === 'normal' ? route.getResults().geometry : coords.slice(-2);
-  let newLength = route.getResults().length;
+    addPoints === 'normal' ? route.getResults().geometry : currentCoords;
+  let newLength =
+    addPoints === 'normal'
+      ? route.getResults().length
+      : SMap.Coords.fromWGS84(currentCoords[0].x, currentCoords[0].y).distance(
+          currentCoords[1]
+        );
   routeLength = [...routeLength, newLength];
 
   const totalLength = routeLength.reduce((a, b) => a + b, 0);
   lengthLabel.innerHTML =
-    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
+    'Délka trasy: ' + (totalLength / 1000.0).toFixed(3).toString() + ' km';
   //let place = map.computeCenterZoom(newCoords);
   //map.setCenterZoom(place[0], place[1]);
 
@@ -148,7 +154,8 @@ const createRoute = route => {
   const markerTotalLength = document.querySelector(
     '[title="' + (numOfClicks - 1).toString() + '"]'
   );
-  markerTotalLength.title = (totalLength / 1000.0).toString() + ' km';
+  markerTotalLength.title =
+    (totalLength / 1000.0).toFixed(3).toString() + ' km';
 
   const geometryOptions = {
     color: strokeColor,
