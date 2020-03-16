@@ -16,22 +16,23 @@ let mouse = new SMap.Control.Mouse(
 map.addControl(mouse);
 
 // Change tourist or trail Layer colours to grayscale
-let touristMap = document.getElementsByTagName('div')[10];
+let touristMap = document.getElementsByTagName('div')[12];
 touristMap.style.filter = 'grayscale(100%)';
-let trailMap = document.getElementsByTagName('div')[8];
+let trailMap = document.getElementsByTagName('div')[10];
 
 // Global variables
-//TODO: Get rid of global variables after testing with mapy.cz API is finished
+//TODO: Get rid of global variables (after testing with mapy.cz API is finished)
+//TODO: Too many unnecessary variables, get rid of some of them
 let addPoints = null;
 let marker = [];
 let geometry = [];
 let coords = [];
+let coordsToFile = [];
 let routeLength = [];
 let totalLength = 0.0;
 let numOfClicks = 0;
 let strokeColor = 'red';
 let routeWidth = 5;
-
 let alertShow = false;
 
 const signalListener = event => {
@@ -59,7 +60,7 @@ map.getSignals().addListener(window, '*', signalListener);
 //   addRoute();
 // };
 
-const addPointMarker = event => {
+const addPointMarker = (event, onePoint = null) => {
   let numberMarker = JAK.mel('div');
   let makerImg = JAK.mel('img', {
     src: SMap.CONFIG.img + '/marker/drop-red.png'
@@ -83,7 +84,9 @@ const addPointMarker = event => {
   numberText.innerHTML = numOfClicks.toString();
   numberMarker.appendChild(numberText);
 
-  let gpsCoords = SMap.Coords.fromEvent(event.data.event, map);
+  let gpsCoords = !onePoint
+    ? SMap.Coords.fromEvent(event.data.event, map)
+    : onePoint;
   const newMarker = new SMap.Marker(gpsCoords, numOfClicks.toString(), {
     title: numOfClicks.toString(),
     url: numberMarker
@@ -93,15 +96,18 @@ const addPointMarker = event => {
   // marker.decorate(SMap.Marker.Feature.Card);
   numOfClicks += 1;
   markerLayer.addMarker(newMarker);
-  coords = [...coords, gpsCoords];
-  addRoute();
+  if (!onePoint) {
+    coordsToFile = [...coordsToFile, { ...gpsCoords, point: addPoints }];
+    coords = [...coords, gpsCoords];
+    addRoute();
+  }
 };
 
 const findRoute = () => {
   let normalRouteCheckBox = document.getElementById('findRoute');
   let lineRouteCheckBox = document.getElementById('lineRoute');
 
-  let mousePointer = document.getElementsByTagName('div')[20];
+  let mousePointer = document.getElementsByTagName('div')[22];
   mousePointer.style.cursor =
     normalRouteCheckBox.checked || lineRouteCheckBox.checked
       ? 'crosshair'
@@ -131,9 +137,8 @@ const addRoute = () => {
 };
 
 const createRoute = route => {
-  let lengthLabel = document.getElementById('routeLabel');
   let currentCoords = coords.slice(-2);
-  // newCoords for normal route, coords for line route
+  // newCoords from geometry for normal route, from currentCoords for line route
   let newCoords =
     addPoints === 'normal' ? route.getResults().geometry : currentCoords;
   let newLength =
@@ -144,9 +149,7 @@ const createRoute = route => {
         );
   routeLength = [...routeLength, newLength];
 
-  const totalLength = routeLength.reduce((a, b) => a + b, 0);
-  lengthLabel.innerHTML =
-    'Délka trasy: ' + (totalLength / 1000.0).toFixed(3).toString() + ' km';
+  showTotalDistance();
   //let place = map.computeCenterZoom(newCoords);
   //map.setCenterZoom(place[0], place[1]);
 
@@ -175,7 +178,6 @@ const createRoute = route => {
 };
 
 const removeRoute = () => {
-  let lengthLabel = document.getElementById('routeLabel');
   routeLayer.removeAll();
   markerLayer.removeAll();
   marker = [];
@@ -184,8 +186,7 @@ const removeRoute = () => {
   routeLength = [];
   totalLength = 0.0;
   numOfClicks = 0;
-  lengthLabel.innerHTML =
-    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
+  showTotalDistance();
 };
 
 const hidePointMarkers = () => {
@@ -230,11 +231,7 @@ const removeLastMarker = () => {
   marker.pop();
   geometry.pop();
   routeLength.pop();
-
-  const lengthLabel = document.getElementById('routeLabel');
-  totalLength = routeLength.reduce((a, b) => a + b, 0);
-  lengthLabel.innerHTML =
-    'Délka trasy: ' + (totalLength / 1000.0).toString() + ' km';
+  showTotalDistance();
 };
 
 const colorChange = trailColor => {
@@ -254,10 +251,110 @@ const routeWidthChange = () => {
   routeLayer.redraw();
 };
 
+const showTotalDistance = () => {
+  let lengthLabel = document.getElementById('routeLabel');
+  totalLength = routeLength.reduce((a, b) => a + b, 0);
+  lengthLabel.innerHTML =
+    'Délka trasy: ' + (totalLength / 1000.0).toFixed(3).toString() + ' km';
+};
+
 const showAlert = () => {
   const saveImageAlert = document.getElementById('saveImageAlert');
   saveImageAlert.hidden = !saveImageAlert.hidden;
   alertShow = !alertShow;
+};
+
+const downloadRouteTxt = () => {
+  let element = document.createElement('a');
+  element.setAttribute(
+    'href',
+    'data:text/json;charset=utf-8,' +
+      encodeURIComponent(JSON.stringify(coordsToFile))
+  );
+  element.setAttribute('download', 'trasa.json');
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+};
+
+const uploadRouteJSON = async routeFile => {
+  readFile(routeFile).then(async () => {
+    // Delete uploaded file info from input
+    document.getElementById('uploadFile').value = '';
+
+    coords.map(async (item, index) => {
+      // Cannot catch promise from SMap.Route.route, so setTimeout was used
+      setTimeout(() => {
+        addPointMarker(event, item);
+
+        if (index > 0) {
+          let actualCoords = [coords[index - 1], coords[index]];
+
+          let options = {
+            geometry: true,
+            criterion: 'turist1'
+          };
+
+          const geometryOptions = {
+            color: strokeColor,
+            outlineOpacity: 0.0,
+            width: routeWidth
+            //opacity: 0.5
+          };
+          SMap.Route.route(actualCoords, options).then(route => {
+            let newLength = route.getResults().length;
+            routeLength = [...routeLength, newLength];
+
+            let newCoords =
+              coordsToFile[index].point === 'normal'
+                ? route.getResults().geometry
+                : actualCoords;
+
+            let lengthLabel = document.getElementById('routeLabel');
+            totalLength = routeLength.reduce((a, b) => a + b, 0);
+
+            let actualTotalDistance = (totalLength / 1000.0)
+              .toFixed(3)
+              .toString();
+
+            lengthLabel.innerHTML =
+              'Délka trasy: ' + actualTotalDistance + ' km';
+            // Add actual distance in km to marker title
+            const markerTotalLength = document.querySelector(
+              '[title="' + index.toString() + '"]'
+            );
+            markerTotalLength.title = actualTotalDistance + ' km';
+
+            const newGeometry = new SMap.Geometry(
+              SMap.GEOMETRY_POLYLINE,
+              null,
+              newCoords,
+              geometryOptions
+            );
+
+            geometry = [...geometry, newGeometry];
+            routeLayer.addGeometry(newGeometry);
+          });
+        }
+      }, index * 500);
+    });
+  });
+};
+
+const readFile = routeFile => {
+  let newCoords = [];
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+    reader.onload = e => {
+      let readCoords = JSON.parse(reader.result).map(item =>
+        SMap.Coords.fromWGS84(item.x, item.y)
+      );
+      coordsToFile = JSON.parse(reader.result);
+      resolve((coords = [...newCoords, ...readCoords]));
+    };
+    reader.readAsText(routeFile[0]);
+  });
 };
 
 const saveImg = () => {

@@ -85,7 +85,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="#">
-                <label for="colorselector">Barva trasy: </label>
+                <label for="colorselector">Základní barvy trasy: </label>
                 <form>
                   <select
                     id="colorselector"
@@ -118,7 +118,6 @@
                 step="0.5"
                 onclick="routeWidthChange()"
               />
-              <div class="dropdown-divider"></div>
               <a
                 id="removePointMarkers"
                 class="dropdown-item"
@@ -126,6 +125,19 @@
                 onclick="hidePointMarkers()"
                 >Skrýt značky</a
               >
+              <div class="dropdown-divider"></div>
+              <input
+                hidden
+                id="uploadFile"
+                type="file"
+                accept=".json"
+                onchange="uploadRouteJSON(this.files)"
+              />
+              <label class="dropdown-item" for="uploadFile">Načíst trasu</label>
+              <a class="dropdown-item" onclick="downloadRouteTxt()" href="#"
+                >Uložit trasu</a
+              >
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#" onclick="removeRoute()"
                 >Vymazat trasu</a
               >
@@ -160,6 +172,7 @@
                 onclick="changeRouteMapColour()"
                 >Vše černobílé</a
               >
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item" onclick="saveImg()" href="#"
                 >Uložit obrázek</a
               >
