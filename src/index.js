@@ -32,7 +32,7 @@ let routeLength = [];
 let totalLength = 0.0;
 let numOfClicks = 0;
 let strokeColor = 'red';
-let routeWidth = 5;
+let routeWidth = 5.5;
 let alertShow = false;
 
 const signalListener = event => {
@@ -183,7 +183,6 @@ const createRoute = route => {
 const removeRoute = () => {
   routeLayer.removeAll();
   markerLayer.removeAll();
-  addPoints = null;
   marker = [];
   geometry = [];
   coords = [];
@@ -191,7 +190,8 @@ const removeRoute = () => {
   routeLength = [];
   totalLength = 0.0;
   numOfClicks = 0;
-  routeWidth = 5;
+  routeWidth = 5.5;
+  document.getElementById('routeWidth').value = 5.5;
   alertShow = false;
   showTotalDistance();
 };
@@ -362,6 +362,7 @@ const readFile = routeFile => {
       );
       strokeColor = JSON.parse(reader.result)[0].color;
       routeWidth = JSON.parse(reader.result)[0].width;
+      document.getElementById('routeWidth').value = routeWidth;
       coordsToFile = JSON.parse(reader.result);
       resolve((coords = [...newCoords, ...readCoords]));
     };
