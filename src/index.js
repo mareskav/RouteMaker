@@ -99,7 +99,7 @@ const addPointMarker = (event, onePoint = null) => {
   if (!onePoint) {
     coordsToFile = [
       ...coordsToFile,
-      { ...gpsCoords, point: addPoints, color: strokeColor }
+      { ...gpsCoords, point: addPoints, color: strokeColor, width: routeWidth }
     ];
     coords = [...coords, gpsCoords];
     addRoute();
@@ -232,6 +232,7 @@ const changeRouteMapColour = () => {
 const removeLastMarker = () => {
   //TODO: Too many variables, remove some
   coords.splice(-1, 1);
+  coordsToFile.splice(-1, 1);
   numOfClicks -= 1;
   markerLayer.removeMarker(marker.slice(-1)[0]);
   routeLayer.removeGeometry(geometry.slice(-1)[0]);
@@ -256,6 +257,7 @@ const routeWidthChange = () => {
   Object.values(routeLayer._geometries).map(
     item => (item._options.width = newRouteWidth)
   );
+  coordsToFile.map(item => (item.width = newRouteWidth));
   routeLayer.redraw();
 };
 
@@ -359,6 +361,7 @@ const readFile = routeFile => {
         SMap.Coords.fromWGS84(item.x, item.y)
       );
       strokeColor = JSON.parse(reader.result)[0].color;
+      routeWidth = JSON.parse(reader.result)[0].width;
       coordsToFile = JSON.parse(reader.result);
       resolve((coords = [...newCoords, ...readCoords]));
     };
