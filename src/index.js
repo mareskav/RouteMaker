@@ -354,6 +354,7 @@ const uploadRouteTxt = async routeFile => {
 };
 
 const readFile = routeFile => {
+  removeRoute();
   return new Promise((resolve, reject) => {
     let reader = new FileReader();
     reader.onload = e => {
