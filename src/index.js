@@ -243,7 +243,6 @@ const removeLastMarker = () => {
 
 const colourChange = trailColor => {
   strokeColor = trailColor;
-  console.log(coordsToFile);
   Object.values(routeLayer._geometries).map(
     item => (item._options.color = trailColor)
   );
