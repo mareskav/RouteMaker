@@ -353,18 +353,21 @@ const uploadRouteTxt = async routeFile => {
 };
 
 const readFile = routeFile => {
-  let newCoords = [];
   return new Promise((resolve, reject) => {
     let reader = new FileReader();
     reader.onload = e => {
       let readCoords = JSON.parse(reader.result).map(item =>
         SMap.Coords.fromWGS84(item.x, item.y)
       );
-      strokeColor = JSON.parse(reader.result)[0].color;
-      routeWidth = JSON.parse(reader.result)[0].width;
+      strokeColor = JSON.parse(reader.result)[0].color
+        ? JSON.parse(reader.result)[0].color
+        : 'red';
+      routeWidth = JSON.parse(reader.result)[0].width
+        ? JSON.parse(reader.result)[0].width
+        : 5.5;
       document.getElementById('routeWidth').value = routeWidth;
       coordsToFile = JSON.parse(reader.result);
-      resolve((coords = [...newCoords, ...readCoords]));
+      resolve((coords = readCoords));
     };
     reader.readAsText(routeFile[0]);
   });
