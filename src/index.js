@@ -190,6 +190,7 @@ const removeRoute = () => {
   routeLength = [];
   totalLength = 0.0;
   numOfClicks = 0;
+  strokeColor = 'red';
   routeWidth = 5.5;
   document.getElementById('routeWidth').value = 5.5;
   alertShow = false;
