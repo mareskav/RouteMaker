@@ -337,7 +337,7 @@ const uploadRouteJSON = async routeFile => {
             routeLayer.addGeometry(newGeometry);
           });
         }
-      }, index * 1000);
+      }, index * 500);
     });
   });
 };
