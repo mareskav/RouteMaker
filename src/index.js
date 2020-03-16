@@ -284,7 +284,7 @@ const uploadRouteJSON = async routeFile => {
     document.getElementById('uploadFile').value = '';
 
     coords.map(async (item, index) => {
-      // Cannot catch promise from SMap.Route.route, so setTimeout was used
+      // It´s not possible to async / await for JAK promise from SMap.Route.route, so setTimeout was used
       setTimeout(() => {
         addPointMarker(event, item);
 
