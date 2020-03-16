@@ -87,7 +87,7 @@
                   <select
                     id="colorselector"
                     class="custom-select form-control"
-                    onchange="colorChange(this.value)"
+                    onchange="colourChange(this.value)"
                   >
                     <option value="red" selected="selected">červená</option>
                     <option value="blue">modrá</option>
@@ -127,8 +127,8 @@
                 hidden
                 id="uploadFile"
                 type="file"
-                accept=".json"
-                onchange="uploadRouteJSON(this.files)"
+                accept=".txt"
+                onchange="uploadRouteTxt(this.files)"
               />
               <label class="dropdown-item" for="uploadFile">Načíst trasu</label>
               <a class="dropdown-item" onclick="downloadRouteTxt()" href="#"

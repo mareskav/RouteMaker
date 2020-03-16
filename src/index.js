@@ -97,7 +97,10 @@ const addPointMarker = (event, onePoint = null) => {
   numOfClicks += 1;
   markerLayer.addMarker(newMarker);
   if (!onePoint) {
-    coordsToFile = [...coordsToFile, { ...gpsCoords, point: addPoints }];
+    coordsToFile = [
+      ...coordsToFile,
+      { ...gpsCoords, point: addPoints, color: strokeColor }
+    ];
     coords = [...coords, gpsCoords];
     addRoute();
   }
@@ -180,12 +183,16 @@ const createRoute = route => {
 const removeRoute = () => {
   routeLayer.removeAll();
   markerLayer.removeAll();
+  addPoints = null;
   marker = [];
   geometry = [];
   coords = [];
+  coordsToFile = [];
   routeLength = [];
   totalLength = 0.0;
   numOfClicks = 0;
+  routeWidth = 5;
+  alertShow = false;
   showTotalDistance();
 };
 
@@ -234,11 +241,13 @@ const removeLastMarker = () => {
   showTotalDistance();
 };
 
-const colorChange = trailColor => {
+const colourChange = trailColor => {
   strokeColor = trailColor;
+  console.log(coordsToFile);
   Object.values(routeLayer._geometries).map(
     item => (item._options.color = trailColor)
   );
+  coordsToFile.map(item => (item.color = trailColor));
   routeLayer.redraw();
 };
 
@@ -268,17 +277,17 @@ const downloadRouteTxt = () => {
   let element = document.createElement('a');
   element.setAttribute(
     'href',
-    'data:text/json;charset=utf-8,' +
+    'data:text/plain;charset=utf-8,' +
       encodeURIComponent(JSON.stringify(coordsToFile))
   );
-  element.setAttribute('download', 'trasa.json');
+  element.setAttribute('download', 'trasa.txt');
   element.style.display = 'none';
   document.body.appendChild(element);
   element.click();
   document.body.removeChild(element);
 };
 
-const uploadRouteJSON = async routeFile => {
+const uploadRouteTxt = async routeFile => {
   readFile(routeFile).then(async () => {
     // Delete uploaded file info from input
     document.getElementById('uploadFile').value = '';
@@ -350,6 +359,7 @@ const readFile = routeFile => {
       let readCoords = JSON.parse(reader.result).map(item =>
         SMap.Coords.fromWGS84(item.x, item.y)
       );
+      strokeColor = JSON.parse(reader.result)[0].color;
       coordsToFile = JSON.parse(reader.result);
       resolve((coords = [...newCoords, ...readCoords]));
     };
@@ -407,7 +417,7 @@ const saveImg = () => {
 const parentBasic = document.querySelector('#colorPicker');
 popupBasic = new Picker({ parent: parentBasic, color: strokeColor });
 popupBasic.onDone = color => {
-  colorChange(color.rgbaString);
+  colourChange(color.rgbaString);
 };
 //Open the popup manually:
 popupBasic.openHandler();
