@@ -16,9 +16,10 @@ let mouse = new SMap.Control.Mouse(
 map.addControl(mouse);
 
 // Change tourist or trail Layer colours to grayscale
-let touristMap = document.getElementsByTagName('div')[12];
+const numOfDivTags = 10;
+let touristMap = document.getElementsByTagName('div')[numOfDivTags + 2];
 touristMap.style.filter = 'grayscale(100%)';
-let trailMap = document.getElementsByTagName('div')[10];
+let trailMap = document.getElementsByTagName('div')[numOfDivTags];
 
 // Global variables
 //TODO: Get rid of global variables (after testing with mapy.cz API is finished)
@@ -110,7 +111,7 @@ const findRoute = () => {
   let normalRouteCheckBox = document.getElementById('findRoute');
   let lineRouteCheckBox = document.getElementById('lineRoute');
 
-  let mousePointer = document.getElementsByTagName('div')[22];
+  let mousePointer = document.getElementsByTagName('div')[numOfDivTags + 12];
   mousePointer.style.cursor =
     normalRouteCheckBox.checked || lineRouteCheckBox.checked
       ? 'crosshair'
@@ -180,8 +181,10 @@ const createRoute = route => {
   routeLayer.addGeometry(newGeometry);
 };
 
-const removeRoute = () => {
-  routeLayer.removeAll();
+const removeRoute = (loadMoreRoutes = false) => {
+  if (!loadMoreRoutes) {
+    routeLayer.removeAll();
+  }
   markerLayer.removeAll();
   marker = [];
   geometry = [];
@@ -354,7 +357,7 @@ const uploadRouteTxt = async routeFile => {
 };
 
 const readFile = routeFile => {
-  removeRoute();
+  removeRoute(true);
   return new Promise((resolve, reject) => {
     let reader = new FileReader();
     reader.onload = e => {
