@@ -35,16 +35,27 @@ let numOfClicks = 0;
 let strokeColor = 'red';
 let routeWidth = 5.5;
 let alertShow = false;
+let printMap = false;
+let timeSetLoadEvent = 0;
 
-const signalListener = event => {
+const signalListener = async event => {
   if (event.type === 'map-click' && addPoints !== null) {
     addPointMarker(event);
   }
-  if (event.type === 'marker-drag-start') {
-    startDrag(event);
-  }
-  if (event.type === 'marker-drag-stop') {
-    stopDrag(event);
+  // if (event.type === 'marker-drag-start') {
+  //   startDrag(event);
+  // }
+  // if (event.type === 'marker-drag-stop') {
+  //   stopDrag(event);
+  // }
+
+  if (event.type === 'tileset-load' && printMap) {
+    // mapy.cz API triggers tile-set-load 2 times when map loaded, we don´t want to download 2 images
+    timeSetLoadEvent += 1;
+    if (timeSetLoadEvent > 1) {
+      // Wait 2 s just for slower internet loading
+      setTimeout(async () => await domToImage(), 2000);
+    }
   }
 };
 map.getSignals().addListener(window, '*', signalListener);
@@ -152,6 +163,10 @@ const createRoute = route => {
           currentCoords[1]
         );
   routeLength = [...routeLength, newLength];
+  coordsToFile[coordsToFile.length - 1] = {
+    ...coordsToFile[coordsToFile.length - 1],
+    distance: newLength
+  };
 
   showTotalDistance();
   //let place = map.computeCenterZoom(newCoords);
@@ -234,7 +249,6 @@ const changeRouteMapColour = () => {
 };
 
 const removeLastMarker = () => {
-  //TODO: Too many variables, remove some
   coords.splice(-1, 1);
   coordsToFile.splice(-1, 1);
   numOfClicks -= 1;
@@ -293,66 +307,64 @@ const downloadRouteTxt = () => {
 };
 
 const uploadRouteTxt = async routeFile => {
-  readFile(routeFile).then(async () => {
-    // Delete uploaded file info from input
-    document.getElementById('uploadFile').value = '';
+  await readFile(routeFile);
+  // Delete uploaded file info from input
+  document.getElementById('uploadFile').value = '';
 
-    coords.map(async (item, index) => {
-      // It´s not possible to async / await for JAK promise from SMap.Route.route, so setTimeout was used
-      setTimeout(() => {
-        addPointMarker(event, item);
+  const promises = coords.map(async (item, index) => {
+    // Add point marker numbers and add distance titles later
+    addPointMarker(event, item);
 
-        if (index > 0) {
-          let actualCoords = [coords[index - 1], coords[index]];
+    // Create route on map from file
+    if (index > 0) {
+      let actualCoords = [coords[index - 1], coords[index]];
+      let options = {
+        geometry: true,
+        criterion: 'turist1'
+      };
+      const geometryOptions = {
+        color: strokeColor,
+        outlineOpacity: 0.0,
+        width: routeWidth
+        //opacity: 0.5
+      };
+      const route = await SMap.Route.route(actualCoords, options);
 
-          let options = {
-            geometry: true,
-            criterion: 'turist1'
-          };
+      let newCoords =
+        coordsToFile[index].point === 'normal'
+          ? route.getResults().geometry
+          : actualCoords;
+      const newGeometry = new SMap.Geometry(
+        SMap.GEOMETRY_POLYLINE,
+        null,
+        newCoords,
+        geometryOptions
+      );
+      geometry = [...geometry, newGeometry];
+      routeLayer.addGeometry(newGeometry);
+    }
+  });
+  await Promise.all(promises);
+  addDistancesFromSavedFile();
+};
 
-          const geometryOptions = {
-            color: strokeColor,
-            outlineOpacity: 0.0,
-            width: routeWidth
-            //opacity: 0.5
-          };
-          SMap.Route.route(actualCoords, options).then(route => {
-            let newLength = route.getResults().length;
-            routeLength = [...routeLength, newLength];
+const addDistancesFromSavedFile = () => {
+  // Add actual distance in km to marker title and routeLabel
+  let actualDistance = 0;
+  coords.map((item, index) => {
+    if (index > 0) {
+      const routeLabel = document.getElementById('routeLabel');
+      const markerTotalDistance = document.querySelector(
+        '[title="' + index.toString() + '"]'
+      );
+      actualDistance += routeLength[index];
+      let actualDistanceToString = (actualDistance / 1000.0)
+        .toFixed(3)
+        .toString();
 
-            let newCoords =
-              coordsToFile[index].point === 'normal'
-                ? route.getResults().geometry
-                : actualCoords;
-
-            let lengthLabel = document.getElementById('routeLabel');
-            totalLength = routeLength.reduce((a, b) => a + b, 0);
-
-            let actualTotalDistance = (totalLength / 1000.0)
-              .toFixed(3)
-              .toString();
-
-            lengthLabel.innerHTML =
-              'Délka trasy: ' + actualTotalDistance + ' km';
-            // Add actual distance in km to marker title
-            const markerTotalLength = document.querySelector(
-              '[title="' + index.toString() + '"]'
-            );
-            markerTotalLength.title = actualTotalDistance + ' km';
-
-            const newGeometry = new SMap.Geometry(
-              SMap.GEOMETRY_POLYLINE,
-              null,
-              newCoords,
-              geometryOptions
-            );
-
-            geometry = [...geometry, newGeometry];
-            routeLayer.addGeometry(newGeometry);
-          });
-        }
-      }, index * 1000);
-    });
+      routeLabel.innerHTML = 'Délka trasy: ' + actualDistanceToString + ' km';
+      markerTotalDistance.title = actualDistanceToString + ' km';
+    }
   });
 };
 
@@ -364,6 +376,9 @@ const readFile = routeFile => {
       let readCoords = JSON.parse(reader.result).map(item =>
         SMap.Coords.fromWGS84(item.x, item.y)
       );
+      let readDistances = JSON.parse(reader.result).map(item =>
+        item.distance ? item.distance : null
+      );
       strokeColor = JSON.parse(reader.result)[0].color
         ? JSON.parse(reader.result)[0].color
         : 'red';
@@ -371,6 +386,7 @@ const readFile = routeFile => {
         ? JSON.parse(reader.result)[0].width
         : 5.5;
       document.getElementById('routeWidth').value = routeWidth;
+      routeLength = readDistances;
       coordsToFile = JSON.parse(reader.result);
       resolve((coords = readCoords));
     };
@@ -378,50 +394,48 @@ const readFile = routeFile => {
   });
 };
 
-const saveImg = () => {
+const saveImg = async () => {
   if (!alertShow) {
     showAlert();
   } else {
     showAlert();
-    const bigMapSize = () => {
-      showLoader();
-      const node = document.getElementById('map');
-      node.removeAttribute('min-height');
-      node.style.height = '5000px';
-      node.style.width = '5000px';
-      map.addControl(new SMap.Control.Sync());
-    };
-
-    const normalMapSize = () => {
-      const node = document.getElementById('map');
-      node.style.width = null;
-      node.style.height = null;
-      node.style.minHeight = '90vh';
-      map.addControl(new SMap.Control.Sync());
-      showLoader();
-    };
-
-    let promise = new Promise(bigMapSize);
-    promise
-      .then(
-        setTimeout(
-          () =>
-            domtoimage
-              .toPng(document.getElementById('map'))
-              .then(dataUrl => {
-                const link = document.createElement('a');
-                link.download = 'mapa.png';
-                link.href = dataUrl;
-                link.click();
-              })
-              .catch(error => {
-                console.error('Oops, no picture generated :(', error);
-              }),
-          10000
-        )
-      )
-      .then(setTimeout(() => normalMapSize(), 15000));
+    await bigMapSize();
+    printMap = true;
   }
+};
+
+const bigMapSize = async () => {
+  showLoader();
+  const node = document.getElementById('map');
+  node.removeAttribute('min-height');
+  node.style.height = '5000px';
+  node.style.width = '5000px';
+  map.addControl(new SMap.Control.Sync());
+};
+
+const normalMapSize = () => {
+  const node = document.getElementById('map');
+  node.style.width = null;
+  node.style.height = null;
+  node.style.minHeight = '90vh';
+  map.addControl(new SMap.Control.Sync());
+  showLoader();
+};
+
+const domToImage = async () => {
+  domtoimage
+    .toPng(document.getElementById('map'))
+    .then(dataUrl => {
+      printMap = false;
+      const link = document.createElement('a');
+      link.download = 'mapa.png';
+      link.href = dataUrl;
+      link.click();
+      normalMapSize();
+    })
+    .catch(error => {
+      console.error('Oops, no picture generated :(', error);
+    });
 };
 
 // vanila-picker own color select
