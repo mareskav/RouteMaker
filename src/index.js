@@ -53,8 +53,8 @@ const signalListener = async event => {
     // mapy.cz API triggers tile-set-load 2 times when map loaded, we don´t want to download 2 images
     timeSetLoadEvent += 1;
     if (timeSetLoadEvent > 1) {
-      // Wait 2 s just for slower internet loading
-      setTimeout(async () => await domToImage(), 2000);
+      // Wait 5 s just for slower internet loading
+      setTimeout(async () => await domToImage(), 5000);
     }
   }
 };
@@ -400,30 +400,36 @@ const saveImg = async () => {
   } else {
     showAlert();
     await bigMapSize();
-    printMap = true;
   }
 };
 
 const bigMapSize = async () => {
   showLoader();
-  const node = document.getElementById('map');
-  node.removeAttribute('min-height');
-  node.style.height = '5000px';
-  node.style.width = '5000px';
-  map.addControl(new SMap.Control.Sync());
+  return new Promise(resolve => {
+    const node = document.getElementById('map');
+    node.removeAttribute('min-height');
+    node.style.height = '5000px';
+    node.style.width = '5000px';
+    map.addControl(new SMap.Control.Sync());
+    resolve((printMap = true));
+  });
 };
 
 const normalMapSize = () => {
-  const node = document.getElementById('map');
-  node.style.width = null;
-  node.style.height = null;
-  node.style.minHeight = '90vh';
-  map.addControl(new SMap.Control.Sync());
-  showLoader();
+  return new Promise(resolve => {
+    const node = document.getElementById('map');
+    node.style.width = null;
+    node.style.height = null;
+    node.style.minHeight = '90vh';
+    map.addControl(new SMap.Control.Sync());
+    showLoader();
+    resolve();
+  });
 };
 
 const domToImage = async () => {
-  domtoimage
+  // dom-to-image library had problem with DEF_BASE map rendering because of CORS, so changed to htmlToImage fork
+  htmlToImage
     .toPng(document.getElementById('map'))
     .then(dataUrl => {
       printMap = false;
@@ -431,8 +437,8 @@ const domToImage = async () => {
       link.download = 'mapa.png';
       link.href = dataUrl;
       link.click();
-      normalMapSize();
     })
+    .then(() => normalMapSize())
     .catch(error => {
       console.error('Oops, no picture generated :(', error);
     });
